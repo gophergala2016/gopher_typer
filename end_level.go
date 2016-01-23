@@ -14,6 +14,8 @@ type endLevel struct {
 	bg tl.Attr
 	gt *GopherTyper
 
+	win bool
+
 	endMessages     []*tl.Entity
 	currentMessage  int
 	totalTime       float64
@@ -30,9 +32,32 @@ func (l *endLevel) addEndMessage(path string, x, y int) {
 
 }
 
+func (l *endLevel) PrintStats(amt, x, y int) {
+	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelCompleted)
+	text := tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+	msg = fmt.Sprintf("Cash Earned: $%d", amt)
+	text = tl.NewText(x-len(msg)/2, y+1, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
+	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.Dollars)
+	text = tl.NewText(x-len(msg)/2, y+2, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
+	if l.win {
+		msg = fmt.Sprintf("Press N for next level or S for store")
+	} else {
+		msg = fmt.Sprintf("Press R to retry level or S for store")
+	}
+	text = tl.NewText(x-len(msg)/2, y+5, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+}
+
 func (l *endLevel) ActivateWin() {
 	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
 	l.Level.AddEntity(&l.gt.console)
+
+	l.win = true
 
 	moneyEarned := 1000
 	l.gt.stats.LevelCompleted++
@@ -44,24 +69,12 @@ func (l *endLevel) ActivateWin() {
 	rect := tl.NewRectangle(quarterW, quarterH, quarterW*2, quarterH*2, tl.ColorCyan)
 	l.AddEntity(rect)
 
+	l.endMessages = []*tl.Entity{}
 	l.addEndMessage("data/you_win_a.txt", quarterW, quarterH)
 	l.addEndMessage("data/you_win_b.txt", quarterW, quarterH)
 	l.AddEntity(l.endMessages[l.currentMessage])
 
-	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelCompleted)
-	text := tl.NewText(quarterW*2-len(msg)/2, quarterH*2, msg, tl.ColorBlack, tl.ColorDefault)
-	l.AddEntity(text)
-	msg = fmt.Sprintf("Cash Earned: $%d", moneyEarned)
-	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+1, msg, tl.ColorBlack, tl.ColorDefault)
-	l.AddEntity(text)
-
-	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.Dollars)
-	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+2, msg, tl.ColorBlack, tl.ColorDefault)
-	l.AddEntity(text)
-
-	msg = fmt.Sprintf("Press N for next level or S for store")
-	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+5, msg, tl.ColorBlack, tl.ColorDefault)
-	l.AddEntity(text)
+	l.PrintStats(moneyEarned, quarterW*2, quarterH*2)
 
 	l.Activate()
 }
@@ -70,15 +83,20 @@ func (l *endLevel) ActivateFail() {
 	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
 	l.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
+	l.win = false
+
 	w, h := l.gt.g.Screen().Size()
 	quarterW := w / 4
 	quarterH := h / 4
 	rect := tl.NewRectangle(quarterW/2, quarterH/2, quarterW*3, quarterH*3, tl.ColorCyan)
 	l.AddEntity(rect)
 
+	l.endMessages = []*tl.Entity{}
 	l.addEndMessage("data/you_loose_a.txt", quarterW/2, quarterH)
 	l.addEndMessage("data/you_loose_b.txt", quarterW/2, quarterH)
 	l.AddEntity(l.endMessages[l.currentMessage])
+
+	l.PrintStats(0, quarterW*2, quarterH*2)
 
 	l.Activate()
 }
@@ -102,7 +120,7 @@ func (l *endLevel) Draw(screen *tl.Screen) {
 
 func (l *endLevel) Tick(e tl.Event) {
 	if e.Type == tl.EventKey {
-		if e.Ch == 'N' || e.Ch == 'n' {
+		if e.Ch == 'N' || e.Ch == 'n' || e.Ch == 'R' || e.Ch == 'r' {
 			l.gt.GoToGame()
 		} else if e.Ch == 'S' || e.Ch == 's' {
 			l.gt.GoToStore()
