@@ -16,6 +16,7 @@ type GopherTyper struct {
 	store    storeLevel
 	end      endLevel
 	console  tl.Text
+	level    Level
 }
 
 func NewGopherTyper() (*GopherTyper, error) {
@@ -39,6 +40,10 @@ func NewGopherTyper() (*GopherTyper, error) {
 
 	gt.GoToIntro()
 
+	return &gt, nil
+}
+
+func (gt *GopherTyper) Run() {
 	gt.ticker = time.NewTicker(33 * time.Millisecond)
 	go func() {
 		prevTick := time.Now()
@@ -47,41 +52,35 @@ func NewGopherTyper() (*GopherTyper, error) {
 			prevTick = t
 		}
 	}()
-	return &gt, nil
-}
-
-func (gt *GopherTyper) Run() {
 	gt.g.Start()
 }
 
 var count = 0
 
 func (gt *GopherTyper) GoToIntro() {
+	gt.level = &gt.intro
 	gt.intro.Activate()
 }
 
 func (gt *GopherTyper) GoToGame() {
+	gt.level = &gt.game
 	gt.game.Activate()
 }
 
 func (gt *GopherTyper) GoToStore() {
+	gt.level = &gt.store
 	gt.store.Activate()
 }
 
 func (gt *GopherTyper) GoToEnd() {
+	gt.level = &gt.end
 	gt.end.Activate()
 }
 
 func (gt *GopherTyper) Tick(dt time.Duration) {
+	gt.level.Update(dt)
+	if count == 0 {
+		gt.GoToIntro()
+	}
 	count++
-	if count == 100 {
-		gt.GoToGame()
-	}
-	if count == 200 {
-		gt.GoToStore()
-	}
-	if count == 300 {
-		gt.GoToEnd()
-	}
-
 }
