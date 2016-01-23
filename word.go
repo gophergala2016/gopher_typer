@@ -20,7 +20,7 @@ func NewWord(x, y int, val string, fg, bg tl.Attr) *word {
 	return &word{tl.NewText(x, y, val, fg, bg), val, time.Now(), 2, false, 0, time.Time{}}
 }
 
-func (w *word) Update(dt time.Duration) {
+func (w *word) Update() {
 	x, _ := w.Position()
 	y := (time.Now().Sub(w.createdAt)).Seconds() * w.v
 	w.SetPosition(x, int(y))

@@ -31,9 +31,10 @@ func (l *gameLevel) Activate() {
 	l.gt.g.Screen().SetLevel(l)
 }
 
-func (l *gameLevel) Update(dt time.Duration) {
+func (l *gameLevel) Draw(screen *tl.Screen) {
+	l.Level.Draw(screen)
 	for _, w := range l.words {
-		w.Update(dt)
+		w.Update()
 	}
 	l.currentWord = nil
 	for i, w := range l.words {
@@ -46,7 +47,6 @@ func (l *gameLevel) Update(dt time.Duration) {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str)
 	} else {
 		l.gt.GoToEnd()
-
 	}
 }
 
@@ -56,6 +56,8 @@ func (l *gameLevel) Tick(e tl.Event) {
 			l.currentWord.KeyDown(e.Ch)
 		}
 	}
+}
+func (l *gameLevel) Update(dt time.Duration) {
 }
 
 func NewGameLevel(g *GopherTyper, fg, bg tl.Attr) gameLevel {

@@ -38,8 +38,6 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt.store.AddEntity(&gt.console)
 	gt.end.AddEntity(&gt.console)
 
-	gt.GoToIntro()
-
 	return &gt, nil
 }
 
@@ -78,6 +76,9 @@ func (gt *GopherTyper) GoToEnd() {
 }
 
 func (gt *GopherTyper) Tick(dt time.Duration) {
+	if gt.level == nil {
+		gt.GoToIntro()
+	}
 	gt.level.Update(dt)
 	if count == 0 {
 		gt.GoToIntro()
