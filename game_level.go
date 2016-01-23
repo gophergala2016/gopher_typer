@@ -19,7 +19,7 @@ type gameLevel struct {
 func (l *gameLevel) Activate() {
 	l.gt.console.SetText("Game Level")
 
-	numWords := 10
+	numWords := 5
 	w, h := l.gt.g.Screen().Size()
 
 	for i := 0; i < numWords; i++ {
@@ -36,8 +36,13 @@ func (l *gameLevel) Activate() {
 
 func (l *gameLevel) Draw(screen *tl.Screen) {
 	l.Level.Draw(screen)
+	_, sh := screen.Size()
+	gameOver := false
 	for _, w := range l.words {
 		w.Update()
+		if !w.complete && w.y > sh-3 {
+			gameOver = true
+		}
 	}
 	l.currentWord = nil
 	for i, w := range l.words {
@@ -46,10 +51,14 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 			break
 		}
 	}
+	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
 	} else {
-		l.gt.GoToEnd()
+		l.gt.GoToEndWin()
+	}
+	if gameOver {
+		l.gt.GoToEndFail()
 	}
 }
 

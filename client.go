@@ -71,9 +71,14 @@ func (gt *GopherTyper) GoToStore() {
 	gt.store.Activate()
 }
 
-func (gt *GopherTyper) GoToEnd() {
+func (gt *GopherTyper) GoToEndWin() {
 	gt.level = &gt.end
-	gt.end.Activate()
+	gt.end.ActivateWin()
+}
+
+func (gt *GopherTyper) GoToEndFail() {
+	gt.level = &gt.end
+	gt.end.ActivateFail()
 }
 
 func (gt *GopherTyper) Tick(dt time.Duration) {

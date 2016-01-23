@@ -35,7 +35,7 @@ func (l *introLevel) Activate() {
 
 func (l *introLevel) Update(dt time.Duration) {
 	l.totalTime += dt.Seconds()
-	if int(l.totalTime)%2 == 1 {
+	if int(l.totalTime*2)%2 == 1 {
 		l.pressAKeyText.SetColor(tl.ColorBlue, tl.ColorDefault)
 	} else {
 		l.pressAKeyText.SetColor(tl.ColorBlue|tl.AttrReverse, tl.ColorDefault)
