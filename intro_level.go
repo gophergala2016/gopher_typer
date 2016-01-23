@@ -31,6 +31,9 @@ func (l *introLevel) Activate() {
 	l.pressAKeyText = tl.NewText(w/2-len(msg)/2, h/2, msg, tl.ColorBlue|tl.AttrReverse, tl.ColorDefault)
 	l.AddEntity(l.pressAKeyText)
 
+	instructions, _ := ioutil.ReadFile("data/instructions.txt")
+	l.AddEntity(tl.NewEntityFromCanvas(quarterW, h/2+2, tl.CanvasFromString(string(instructions))))
+
 	l.gt.g.Screen().SetLevel(l)
 }
 
