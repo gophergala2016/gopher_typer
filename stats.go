@@ -1,6 +1,7 @@
 package gopher_typer
 
 type stats struct {
-	LevelCompleted int
-	Dollars        int
+	LevelsCompleted int
+	LevelsAttempted int
+	Dollars         int
 }

@@ -24,7 +24,7 @@ func (l *gameLevel) Activate() {
 	l.gt.game.AddEntity(&l.gt.console)
 	l.gt.console.SetText("Game Level")
 
-	numWords := 5
+	numWords := l.gt.stats.LevelsCompleted + 1
 	w, h := l.gt.g.Screen().Size()
 	l.words = []*word{}
 

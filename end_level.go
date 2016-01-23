@@ -33,15 +33,20 @@ func (l *endLevel) addEndMessage(path string, x, y int) {
 }
 
 func (l *endLevel) PrintStats(amt, x, y int) {
-	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelCompleted)
+	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelsCompleted)
 	text := tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+
+	msg = fmt.Sprintf("Levels Attempted: %d", l.gt.stats.LevelsAttempted)
+	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
 	msg = fmt.Sprintf("Cash Earned: $%d", amt)
-	text = tl.NewText(x-len(msg)/2, y+1, msg, tl.ColorBlack, tl.ColorDefault)
+	text = tl.NewText(x-len(msg)/2, y+2, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
 
 	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.Dollars)
-	text = tl.NewText(x-len(msg)/2, y+2, msg, tl.ColorBlack, tl.ColorDefault)
+	text = tl.NewText(x-len(msg)/2, y+3, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
 
 	if l.win {
@@ -60,7 +65,8 @@ func (l *endLevel) ActivateWin() {
 	l.win = true
 
 	moneyEarned := 1000
-	l.gt.stats.LevelCompleted++
+	l.gt.stats.LevelsCompleted++
+	l.gt.stats.LevelsAttempted++
 	l.gt.stats.Dollars += moneyEarned
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
@@ -84,6 +90,7 @@ func (l *endLevel) ActivateFail() {
 	l.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
 	l.win = false
+	l.gt.stats.LevelsAttempted++
 
 	w, h := l.gt.g.Screen().Size()
 	quarterW := w / 4
