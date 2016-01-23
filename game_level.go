@@ -11,16 +11,22 @@ import (
 type gameLevel struct {
 	tl.Level
 	gt              *GopherTyper
+	fg              tl.Attr
+	bg              tl.Attr
 	words           []*word
 	currentWord     *word
 	currentWordText *tl.Text
 }
 
 func (l *gameLevel) Activate() {
+	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
+
+	l.gt.game.AddEntity(&l.gt.console)
 	l.gt.console.SetText("Game Level")
 
 	numWords := 5
 	w, h := l.gt.g.Screen().Size()
+	l.words = []*word{}
 
 	for i := 0; i < numWords; i++ {
 		w := NewWord(w/numWords*i, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorGreen, tl.ColorDefault)
@@ -73,6 +79,5 @@ func (l *gameLevel) Update(dt time.Duration) {
 }
 
 func NewGameLevel(g *GopherTyper, fg, bg tl.Attr) gameLevel {
-	l := tl.NewBaseLevel(tl.Cell{Bg: bg, Fg: fg})
-	return gameLevel{l, g, []*word{}, nil, nil}
+	return gameLevel{gt: g, fg: fg, bg: bg}
 }

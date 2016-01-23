@@ -10,6 +10,8 @@ import (
 
 type endLevel struct {
 	tl.Level
+	fg tl.Attr
+	bg tl.Attr
 	gt *GopherTyper
 
 	endMessages     []*tl.Entity
@@ -29,8 +31,12 @@ func (l *endLevel) addEndMessage(path string, x, y int) {
 }
 
 func (l *endLevel) ActivateWin() {
+	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
+	l.Level.AddEntity(&l.gt.console)
+
+	moneyEarned := 1000
 	l.gt.stats.LevelCompleted++
-	l.gt.stats.Dollars += 1000
+	l.gt.stats.Dollars += moneyEarned
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
 	quarterW := w / 4
@@ -42,10 +48,27 @@ func (l *endLevel) ActivateWin() {
 	l.addEndMessage("data/you_win_b.txt", quarterW, quarterH)
 	l.AddEntity(l.endMessages[l.currentMessage])
 
+	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelCompleted)
+	text := tl.NewText(quarterW*2-len(msg)/2, quarterH*2, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+	msg = fmt.Sprintf("Cash Earned: $%d", moneyEarned)
+	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+1, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
+	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.Dollars)
+	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+2, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
+	msg = fmt.Sprintf("Press N for next level or S for store")
+	text = tl.NewText(quarterW*2-len(msg)/2, quarterH*2+5, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
 	l.Activate()
 }
 
 func (l *endLevel) ActivateFail() {
+	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
+	l.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
 	quarterW := w / 4
@@ -77,11 +100,20 @@ func (l *endLevel) Draw(screen *tl.Screen) {
 
 }
 
+func (l *endLevel) Tick(e tl.Event) {
+	if e.Type == tl.EventKey {
+		if e.Ch == 'N' || e.Ch == 'n' {
+			l.gt.GoToGame()
+		} else if e.Ch == 'S' || e.Ch == 's' {
+			l.gt.GoToStore()
+		}
+	}
+}
+
 func (l *endLevel) Update(dt time.Duration) {
 	l.totalTime += dt.Seconds()
 }
 
 func NewEndLevel(g *GopherTyper, fg, bg tl.Attr) endLevel {
-	l := tl.NewBaseLevel(tl.Cell{Bg: bg, Fg: fg})
-	return endLevel{Level: l, gt: g}
+	return endLevel{gt: g, fg: fg, bg: bg}
 }

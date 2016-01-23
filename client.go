@@ -34,11 +34,6 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt.store = NewStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
 	gt.end = NewEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
 
-	gt.intro.AddEntity(&gt.console)
-	gt.game.AddEntity(&gt.console)
-	gt.store.AddEntity(&gt.console)
-	gt.end.AddEntity(&gt.console)
-
 	return &gt, nil
 }
 
