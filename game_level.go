@@ -22,7 +22,7 @@ func (l *gameLevel) Activate() {
 	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
 
 	l.gt.game.AddEntity(&l.gt.console)
-	l.gt.console.SetText("Game Level")
+	l.gt.console.SetText("")
 
 	numWords := l.gt.stats.LevelsCompleted + 1
 	w, h := l.gt.g.Screen().Size()

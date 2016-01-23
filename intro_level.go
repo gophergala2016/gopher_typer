@@ -16,7 +16,7 @@ type introLevel struct {
 
 func (l *introLevel) Activate() {
 	l.gt.intro.AddEntity(&l.gt.console)
-	l.gt.console.SetText("Intro Level")
+	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
 	quarterW := w / 4
 	quarterH := h / 4
