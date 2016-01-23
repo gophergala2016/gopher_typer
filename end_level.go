@@ -14,7 +14,8 @@ type endLevel struct {
 	bg tl.Attr
 	gt *GopherTyper
 
-	win bool
+	win      bool
+	tickWait time.Time
 
 	endMessages     []*tl.Entity
 	currentMessage  int
@@ -110,6 +111,7 @@ func (l *endLevel) ActivateFail() {
 
 func (l *endLevel) Activate() {
 	l.gt.g.Screen().SetLevel(l)
+	l.tickWait = time.Now().Add(time.Second)
 }
 
 func (l *endLevel) Draw(screen *tl.Screen) {
@@ -126,7 +128,7 @@ func (l *endLevel) Draw(screen *tl.Screen) {
 }
 
 func (l *endLevel) Tick(e tl.Event) {
-	if e.Type == tl.EventKey {
+	if time.Now().After(l.tickWait) && e.Type == tl.EventKey {
 		if e.Ch == 'N' || e.Ch == 'n' || e.Ch == 'R' || e.Ch == 'r' {
 			l.gt.GoToGame()
 		} else if e.Ch == 'S' || e.Ch == 's' {
