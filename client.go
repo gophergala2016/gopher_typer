@@ -8,13 +8,14 @@ import (
 )
 
 type GopherTyper struct {
-	g          *tl.Game
-	wordList   []string
-	ticker     *time.Ticker
-	introLevel tl.Level
-	gameLevel  tl.Level
-	storeLevel tl.Level
-	endLevel   tl.Level
+	g        *tl.Game
+	wordList []string
+	ticker   *time.Ticker
+	intro    introLevel
+	game     gameLevel
+	store    storeLevel
+	end      endLevel
+	console  tl.Text
 }
 
 func NewGopherTyper() (*GopherTyper, error) {
@@ -26,10 +27,15 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt := GopherTyper{}
 	gt.g = tl.NewGame()
 	gt.wordList = NewWordLoader(wReader)
-	gt.introLevel = tl.NewBaseLevel(tl.Cell{Bg: tl.ColorBlue, Fg: tl.ColorGreen})
-	gt.gameLevel = tl.NewBaseLevel(tl.Cell{Bg: tl.ColorRed, Fg: tl.ColorGreen})
-	gt.storeLevel = tl.NewBaseLevel(tl.Cell{Bg: tl.ColorYellow, Fg: tl.ColorGreen})
-	gt.endLevel = tl.NewBaseLevel(tl.Cell{Bg: tl.ColorCyan, Fg: tl.ColorGreen})
+	gt.intro = NewIntroLevel(&gt, tl.ColorBlack, tl.ColorBlue)
+	gt.game = NewGameLevel(&gt, tl.ColorBlack, tl.ColorRed)
+	gt.store = NewStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
+	gt.end = NewEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
+
+	gt.intro.AddEntity(&gt.console)
+	gt.game.AddEntity(&gt.console)
+	gt.store.AddEntity(&gt.console)
+	gt.end.AddEntity(&gt.console)
 
 	gt.GoToIntro()
 
@@ -51,19 +57,19 @@ func (gt *GopherTyper) Run() {
 var count = 0
 
 func (gt *GopherTyper) GoToIntro() {
-	gt.g.Screen().SetLevel(gt.introLevel)
+	gt.intro.Activate()
 }
 
 func (gt *GopherTyper) GoToGame() {
-	gt.g.Screen().SetLevel(gt.gameLevel)
+	gt.game.Activate()
 }
 
 func (gt *GopherTyper) GoToStore() {
-	gt.g.Screen().SetLevel(gt.storeLevel)
+	gt.store.Activate()
 }
 
 func (gt *GopherTyper) GoToEnd() {
-	gt.g.Screen().SetLevel(gt.endLevel)
+	gt.end.Activate()
 }
 
 func (gt *GopherTyper) Tick(dt time.Duration) {
