@@ -17,6 +17,7 @@ type GopherTyper struct {
 	end      endLevel
 	console  tl.Text
 	level    Level
+	stats    stats
 }
 
 func NewGopherTyper() (*GopherTyper, error) {

@@ -2,6 +2,7 @@ package gopher_typer
 
 import (
 	"math/rand"
+	"strings"
 	"time"
 
 	tl "github.com/JoelOtter/termloop"
@@ -28,6 +29,8 @@ func (l *gameLevel) Activate() {
 	}
 	l.currentWordText = tl.NewText(0, h-1, "", tl.ColorRed, tl.ColorBlue)
 	l.AddEntity(l.currentWordText)
+
+	l.AddEntity(tl.NewText(0, h-2, strings.Repeat("*", w), tl.ColorBlack, tl.ColorDefault))
 	l.gt.g.Screen().SetLevel(l)
 }
 
@@ -44,7 +47,7 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 		}
 	}
 	if l.currentWord != nil {
-		l.currentWordText.SetText("Current Word: " + l.currentWord.str)
+		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
 	} else {
 		l.gt.GoToEnd()
 	}

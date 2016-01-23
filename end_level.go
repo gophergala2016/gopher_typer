@@ -12,6 +12,8 @@ type endLevel struct {
 }
 
 func (l *endLevel) Activate() {
+	l.gt.stats.LevelCompleted++
+	l.gt.stats.Dollars += 1000
 	l.gt.console.SetText("End Level")
 	l.gt.g.Screen().SetLevel(l)
 }
