@@ -9,12 +9,18 @@ import (
 
 type introLevel struct {
 	tl.Level
-	gt            *GopherTyper
-	pressAKeyText *tl.Text
-	totalTime     float64
+	gt              *GopherTyper
+	pressAKeyText   *tl.Text
+	needsRefresh    bool
+	swapMessageTime time.Time
+	reverseText     bool
 }
 
 func (l *introLevel) Activate() {
+	l.needsRefresh = true
+	l.gt.g.Screen().SetLevel(l)
+}
+func (l *introLevel) refresh() {
 	l.gt.intro.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
@@ -34,16 +40,23 @@ func (l *introLevel) Activate() {
 	instructions, _ := ioutil.ReadFile("data/instructions.txt")
 	l.AddEntity(tl.NewEntityFromCanvas(quarterW, h/2+2, tl.CanvasFromString(string(instructions))))
 
-	l.gt.g.Screen().SetLevel(l)
+	l.needsRefresh = false
 }
 
-func (l *introLevel) Update(dt time.Duration) {
-	l.totalTime += dt.Seconds()
-	if int(l.totalTime*2)%2 == 1 {
-		l.pressAKeyText.SetColor(tl.ColorBlue, tl.ColorDefault)
-	} else {
-		l.pressAKeyText.SetColor(tl.ColorBlue|tl.AttrReverse, tl.ColorDefault)
+func (l *introLevel) Draw(screen *tl.Screen) {
+	if l.needsRefresh {
+		l.refresh()
 	}
+	if time.Now().After(l.swapMessageTime) {
+		if l.reverseText {
+			l.pressAKeyText.SetColor(tl.ColorBlue, tl.ColorDefault)
+		} else {
+			l.pressAKeyText.SetColor(tl.ColorBlue|tl.AttrReverse, tl.ColorDefault)
+		}
+		l.reverseText = !l.reverseText
+		l.swapMessageTime = time.Now().Add(500 * time.Millisecond)
+	}
+	l.Level.Draw(screen)
 }
 
 func (l *introLevel) Tick(event tl.Event) {
@@ -54,5 +67,5 @@ func (l *introLevel) Tick(event tl.Event) {
 
 func NewIntroLevel(g *GopherTyper, fg, bg tl.Attr) introLevel {
 	l := tl.NewBaseLevel(tl.Cell{Bg: bg, Fg: fg})
-	return introLevel{l, g, nil, 0}
+	return introLevel{Level: l, gt: g}
 }

@@ -19,7 +19,6 @@ type endLevel struct {
 
 	endMessages     []*tl.Entity
 	currentMessage  int
-	totalTime       float64
 	swapMessageTime time.Time
 }
 
@@ -135,10 +134,6 @@ func (l *endLevel) Tick(e tl.Event) {
 			l.gt.GoToStore()
 		}
 	}
-}
-
-func (l *endLevel) Update(dt time.Duration) {
-	l.totalTime += dt.Seconds()
 }
 
 func NewEndLevel(g *GopherTyper, fg, bg tl.Attr) endLevel {

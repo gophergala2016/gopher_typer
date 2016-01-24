@@ -10,13 +10,12 @@ import (
 type GopherTyper struct {
 	g        *tl.Game
 	wordList []string
-	ticker   *time.Ticker
 	intro    introLevel
 	game     gameLevel
 	store    storeLevel
 	end      endLevel
 	console  tl.Text
-	level    Level
+	level    tl.Level
 	stats    stats
 	items    []item
 }
@@ -39,18 +38,9 @@ func NewGopherTyper() (*GopherTyper, error) {
 }
 
 func (gt *GopherTyper) Run() {
-	gt.ticker = time.NewTicker(33 * time.Millisecond)
-	go func() {
-		prevTick := time.Now()
-		for t := range gt.ticker.C {
-			gt.Tick(t.Sub(prevTick))
-			prevTick = t
-		}
-	}()
+	gt.GoToIntro()
 	gt.g.Start()
 }
-
-var count = 0
 
 func (gt *GopherTyper) GoToIntro() {
 	gt.level = &gt.intro
@@ -81,9 +71,4 @@ func (gt *GopherTyper) Tick(dt time.Duration) {
 	if gt.level == nil {
 		gt.GoToIntro()
 	}
-	gt.level.Update(dt)
-	if count == 0 {
-		gt.GoToIntro()
-	}
-	count++
 }
