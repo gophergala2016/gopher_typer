@@ -39,7 +39,7 @@ func (l *gameLevel) Activate() {
 
 	l.AddEntity(tl.NewText(0, h-2, strings.Repeat("*", w), tl.ColorBlack, tl.ColorDefault))
 	for _, i := range l.gt.items {
-		i.Reset(l)
+		i.Reset(l.gt)
 	}
 
 	l.gt.g.Screen().SetLevel(l)

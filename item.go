@@ -12,7 +12,7 @@ type item interface {
 	Price() int
 	PriceDesc() string
 	SetId(int)
-	Reset(g *gameLevel)
+	Reset(gt *GopherTyper)
 	Purchase(g *storeLevel) bool
 	Dupe() item
 
@@ -26,6 +26,7 @@ type goroutineItem struct {
 	currentWord *word
 	id          int
 	cpuUpgrades int
+	price       int
 }
 
 func (i *goroutineItem) Name() string {
@@ -35,7 +36,7 @@ func (i *goroutineItem) Desc() string {
 	return "Add a goroutine to help type words for you"
 }
 func (i *goroutineItem) Price() int {
-	return 1000
+	return i.price
 }
 func (i *goroutineItem) PriceDesc() string {
 	return fmt.Sprintf("$%d", i.Price())
@@ -72,9 +73,15 @@ func (i *goroutineItem) sleep() {
 func (i *goroutineItem) SetId(id int) {
 	i.id = id
 }
-func (i *goroutineItem) Reset(l *gameLevel) {
+func (i *goroutineItem) Reset(gt *GopherTyper) {
 	i.currentWord = nil
-	i.cpuUpgrades = l.gt.stats.CpuUpgrades
+	i.cpuUpgrades = gt.stats.CpuUpgrades
+	i.price = 1000
+	for _, itm := range gt.items {
+		if itm.Name() == i.Name() {
+			i.price *= 2
+		}
+	}
 }
 func (i *goroutineItem) Dupe() item {
 	var dupe goroutineItem
@@ -92,7 +99,8 @@ func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
 }
 
 type cpuUpgradeItem struct {
-	id int
+	id    int
+	price int
 }
 
 func (i *cpuUpgradeItem) Name() string {
@@ -102,7 +110,7 @@ func (i *cpuUpgradeItem) Desc() string {
 	return "Make your goroutines go faster"
 }
 func (i *cpuUpgradeItem) Price() int {
-	return 2000
+	return i.price
 }
 func (i *cpuUpgradeItem) PriceDesc() string {
 	return fmt.Sprintf("$%d", i.Price())
@@ -112,7 +120,8 @@ func (i *cpuUpgradeItem) Tick(gl *gameLevel) {
 func (i *cpuUpgradeItem) SetId(id int) {
 	i.id = id
 }
-func (i *cpuUpgradeItem) Reset(l *gameLevel) {
+func (i *cpuUpgradeItem) Reset(gt *GopherTyper) {
+	i.price = 2000 * gt.stats.CpuUpgrades
 }
 func (i *cpuUpgradeItem) Purchase(l *storeLevel) bool {
 	l.gt.stats.CpuUpgrades++

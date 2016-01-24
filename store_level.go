@@ -39,6 +39,7 @@ func (l *storeLevel) refresh() {
 
 	y := 12
 	for idx, i := range l.items {
+		i.Reset(l.gt)
 		x := 14
 		fg := tl.ColorBlack
 		if i.Price() > l.gt.stats.Dollars {
