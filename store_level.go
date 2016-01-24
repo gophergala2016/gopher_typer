@@ -113,7 +113,7 @@ func (l *storeLevel) Tick(e tl.Event) {
 
 func NewBaseItems() []item {
 	return []item{
-		NewGoroutineItem(300*time.Millisecond, 500*time.Millisecond),
+		NewGoroutineItem(150*time.Millisecond, 500*time.Millisecond),
 		&cpuUpgradeItem{},
 		&goUpgradeItem{},
 	}
