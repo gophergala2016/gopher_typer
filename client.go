@@ -34,7 +34,7 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt.store = NewStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
 	gt.end = NewEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
 
-	gt.stats.CpuUpgrades = 1
+	gt.stats = NewStats()
 
 	return &gt, nil
 }
@@ -50,6 +50,10 @@ func (gt *GopherTyper) GoToIntro() {
 }
 
 func (gt *GopherTyper) GoToGame() {
+	if gt.stats.Lives == 0 {
+		gt.stats = NewStats()
+		gt.items = []item{}
+	}
 	gt.level = &gt.game
 	gt.game.Activate()
 }

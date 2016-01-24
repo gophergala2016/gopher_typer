@@ -20,17 +20,18 @@ func (l *introLevel) Activate() {
 	l.needsRefresh = true
 	l.gt.g.Screen().SetLevel(l)
 }
+
 func (l *introLevel) refresh() {
 	l.gt.intro.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
-	quarterW := w / 4
 	quarterH := h / 4
-	rect := tl.NewRectangle(quarterW, quarterH, quarterW*2, quarterH*2, tl.ColorCyan)
+	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorCyan)
 	l.AddEntity(rect)
 
 	logo, _ := ioutil.ReadFile("data/logo.txt")
-	logoEntity := tl.NewEntityFromCanvas(quarterW, quarterH, tl.CanvasFromString(string(logo)))
+	c := tl.CanvasFromString(string(logo))
+	logoEntity := tl.NewEntityFromCanvas(w/2-len(c)/2, quarterH, tl.CanvasFromString(string(logo)))
 	l.AddEntity(logoEntity)
 
 	msg := "Press any key to continue"
@@ -38,7 +39,8 @@ func (l *introLevel) refresh() {
 	l.AddEntity(l.pressAKeyText)
 
 	instructions, _ := ioutil.ReadFile("data/instructions.txt")
-	l.AddEntity(tl.NewEntityFromCanvas(quarterW, h/2+1, tl.CanvasFromString(string(instructions))))
+	c = tl.CanvasFromString(string(instructions))
+	l.AddEntity(tl.NewEntityFromCanvas(w/2-len(c)/2, h/2+2, c))
 
 	l.needsRefresh = false
 }

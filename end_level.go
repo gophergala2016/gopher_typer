@@ -28,8 +28,9 @@ func (l *endLevel) addEndMessage(path string, x, y int) {
 		l.gt.console.SetText(fmt.Sprintf("Err: %+v", err))
 		return
 	}
-	l.endMessages = append(l.endMessages, tl.NewEntityFromCanvas(x, y, tl.CanvasFromString(string(data))))
+	c := tl.CanvasFromString(string(data))
 
+	l.endMessages = append(l.endMessages, tl.NewEntityFromCanvas(x-len(c)/2, y, c))
 }
 
 func (l *endLevel) PrintStats(amt, x, y int) {
@@ -49,12 +50,18 @@ func (l *endLevel) PrintStats(amt, x, y int) {
 	text = tl.NewText(x-len(msg)/2, y+3, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
 
+	msg = fmt.Sprintf("Lives Remaining: %d", l.gt.stats.Lives)
+	text = tl.NewText(x-len(msg)/2, y+4, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+
 	if l.win {
 		msg = fmt.Sprintf("Press N for next level or S for store")
-	} else {
+	} else if l.gt.stats.Lives > 0 {
 		msg = fmt.Sprintf("Press R to retry level or S for store")
+	} else {
+		msg = fmt.Sprintf("Press Enter to quit or N for new game")
 	}
-	text = tl.NewText(x-len(msg)/2, y+5, msg, tl.ColorBlack, tl.ColorDefault)
+	text = tl.NewText(x-len(msg)/2, y+7, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
 }
 
@@ -70,40 +77,61 @@ func (l *endLevel) ActivateWin() {
 	l.gt.stats.Dollars += moneyEarned
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
-	quarterW := w / 4
-	quarterH := h / 4
-	rect := tl.NewRectangle(quarterW, quarterH, quarterW*2, quarterH*2, tl.ColorCyan)
+	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorCyan)
 	l.AddEntity(rect)
 
 	l.endMessages = []*tl.Entity{}
-	l.addEndMessage("data/you_win_a.txt", quarterW, quarterH)
-	l.addEndMessage("data/you_win_b.txt", quarterW, quarterH)
+	l.addEndMessage("data/you_win_a.txt", w/2, 3)
+	l.addEndMessage("data/you_win_b.txt", w/2, 3)
 	l.AddEntity(l.endMessages[l.currentMessage])
 
-	l.PrintStats(moneyEarned, quarterW*2, quarterH*2)
+	l.PrintStats(moneyEarned, w/2, 13)
 
 	l.Activate()
 }
 
 func (l *endLevel) ActivateFail() {
+	l.win = false
+	l.gt.stats.LevelsAttempted++
+	l.gt.stats.Lives--
+	if l.gt.stats.Lives == 0 {
+		l.ActivateGameOver()
+		return
+	}
 	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
 	l.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
-	l.win = false
-	l.gt.stats.LevelsAttempted++
 
 	w, h := l.gt.g.Screen().Size()
-	quarterW := w / 4
-	quarterH := h / 4
-	rect := tl.NewRectangle(quarterW/2, quarterH/2, quarterW*3, quarterH*3, tl.ColorCyan)
+	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorCyan)
 	l.AddEntity(rect)
 
 	l.endMessages = []*tl.Entity{}
-	l.addEndMessage("data/you_loose_a.txt", quarterW/2, quarterH)
-	l.addEndMessage("data/you_loose_b.txt", quarterW/2, quarterH)
+	l.addEndMessage("data/you_loose_a.txt", w/2, 3)
+	l.addEndMessage("data/you_loose_b.txt", w/2, 3)
 	l.AddEntity(l.endMessages[l.currentMessage])
 
-	l.PrintStats(0, quarterW*2, quarterH*2)
+	l.PrintStats(0, w/2, 13)
+
+	l.Activate()
+}
+
+func (l *endLevel) ActivateGameOver() {
+	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
+	l.AddEntity(&l.gt.console)
+	l.gt.console.SetText("")
+	l.gt.g.SetEndKey(tl.KeyEnter)
+
+	w, h := l.gt.g.Screen().Size()
+	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorCyan)
+	l.AddEntity(rect)
+
+	l.endMessages = []*tl.Entity{}
+	l.addEndMessage("data/game_over_a.txt", w/2, 3)
+	l.addEndMessage("data/game_over_b.txt", w/2, 3)
+	l.AddEntity(l.endMessages[l.currentMessage])
+
+	l.PrintStats(0, w/2, 13)
 
 	l.Activate()
 }
@@ -129,8 +157,10 @@ func (l *endLevel) Draw(screen *tl.Screen) {
 func (l *endLevel) Tick(e tl.Event) {
 	if time.Now().After(l.tickWait) && e.Type == tl.EventKey {
 		if e.Ch == 'N' || e.Ch == 'n' || e.Ch == 'R' || e.Ch == 'r' {
+			l.gt.g.SetEndKey(tl.KeyCtrlC)
 			l.gt.GoToGame()
 		} else if e.Ch == 'S' || e.Ch == 's' {
+			l.gt.g.SetEndKey(tl.KeyCtrlC)
 			l.gt.GoToStore()
 		}
 	}

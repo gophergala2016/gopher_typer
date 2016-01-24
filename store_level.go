@@ -24,23 +24,22 @@ func (l *storeLevel) refresh() {
 	l.gt.console.SetText("")
 
 	w, h := l.gt.g.Screen().Size()
-	quarterW := w / 4
-	quarterH := h / 4
-	rect := tl.NewRectangle(quarterW, quarterH, quarterW*2, quarterH*2, tl.ColorGreen)
+	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorGreen)
 	l.AddEntity(rect)
 
 	store, _ := ioutil.ReadFile("data/store.txt")
-	l.AddEntity(tl.NewEntityFromCanvas(w/2-25, quarterH-10, tl.CanvasFromString(string(store))))
+	c := tl.CanvasFromString(string(store))
+	l.AddEntity(tl.NewEntityFromCanvas(w/2-len(c)/2, 4, c))
 
-	msg := "Up/Down(j/k) to navigate, Enter to purchase, N to return to the game"
-	l.AddEntity(tl.NewText(w/2-len(msg)/2, quarterH-1, msg, tl.ColorBlack, tl.ColorDefault))
+	msg := "Up/Down(j/k), Enter to purchase, N to return to the game"
+	l.AddEntity(tl.NewText(w/2-len(msg)/2, 10, msg, tl.ColorBlack, tl.ColorDefault))
 
 	msg = fmt.Sprintf("Cash: $%d", l.gt.stats.Dollars)
-	l.AddEntity(tl.NewText(quarterW*3-len(msg), quarterH+1, msg, tl.ColorBlack, tl.ColorDefault))
+	l.AddEntity(tl.NewText(14, 11, msg, tl.ColorBlack, tl.ColorDefault))
 
-	y := quarterH + 3
+	y := 12
 	for idx, i := range l.items {
-		x := quarterW + 4
+		x := 14
 		fg := tl.ColorBlack
 		if i.Price() > l.gt.stats.Dollars {
 			fg = tl.ColorRed
@@ -58,7 +57,7 @@ func (l *storeLevel) refresh() {
 	}
 
 	desc := l.items[l.currentItem].Desc()
-	l.AddEntity(tl.NewText(quarterW+4, h/2, desc, tl.ColorBlue, tl.ColorDefault))
+	l.AddEntity(tl.NewText(14, y+1, desc, tl.ColorBlue, tl.ColorDefault))
 
 	l.gt.g.Screen().SetLevel(l)
 }

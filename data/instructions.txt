@@ -1,8 +1,4 @@
 Type the word with the blue background.
-
-If you are not sure what you need to type, the remaining part of the word
-is displayed in the bottom left.
-
-For every level you beat, you will have an extra word to type.
-
+For every level you beat, you will have
+an extra word to type.
 Buy upgrades at the store to help you out.
