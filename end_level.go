@@ -119,7 +119,7 @@ func (l *endLevel) Draw(screen *tl.Screen) {
 
 	if time.Now().After(l.swapMessageTime) {
 		lastMessage := l.currentMessage
-		l.swapMessageTime = time.Now().Add(500 * time.Millisecond)
+		l.swapMessageTime = time.Now().Add(250 * time.Millisecond)
 		l.currentMessage = (l.currentMessage + 1) % len(l.endMessages)
 		l.RemoveEntity(l.endMessages[lastMessage])
 		l.AddEntity(l.endMessages[l.currentMessage])
