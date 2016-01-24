@@ -2,6 +2,7 @@ package gopher_typer
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"strings"
 	"time"
@@ -102,10 +103,10 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 	}
 	var msg string
 	if time.Now().Before(l.garbageCollectEndsAt) {
-		msg = fmt.Sprintf("COLLECTING GARBAGE")
+		msg = fmt.Sprintf("COLLECTING GARBAGE: PLEASE WAIT")
 		l.garbageText.SetText(msg)
 		bgColor := tl.ColorBlue
-		if float64(time.Now().Sub(l.garbageCollectEndsAt))/float64(time.Second) > 0.5 {
+		if math.Remainder(float64(time.Now().Sub(l.garbageCollectEndsAt)), float64(time.Second)) > 0.5 {
 			bgColor = tl.ColorBlack
 		}
 		l.garbageText.SetColor(tl.ColorRed, bgColor)
