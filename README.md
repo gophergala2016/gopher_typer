@@ -11,7 +11,18 @@ Upgrade your goroutines to reduce the time spend in garbage collection, and how 
 # Installing
 
 ```
+go get github.com/gophergala2016/gopher_typer
 go install github.com/gophergala2016/gopher_typer/cmd/gopher_typer/
 cd $GOPATH/src/github.com/gophergala2016/gopher_typer
 $GOPATH/bin/gopher_typer
 ```
+
+or
+```
+go get github.com/gophergala2016/gopher_typer
+cd $GOPATH/src/github.com/gophergala2016/gopher_typer
+go run cmd/gopher_typer/main.go
+```
+
+# Packages used:
+Termloop - https://github.com/JoelOtter/termloop
