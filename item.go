@@ -158,11 +158,11 @@ func (i *goUpgradeItem) SetID(id int) {
 	i.id = id
 }
 func (i *goUpgradeItem) Reset(gt *GopherTyper) {
-	i.price = int(4000 * gt.stats.GoVersion)
+	i.price = int(1000 * gt.stats.GoVersion)
 }
 func (i *goUpgradeItem) Purchase(l *storeLevel) bool {
 	l.gt.stats.GoVersion += 0.1
-	l.gt.stats.GarbageFreq += 5
+	l.gt.stats.GarbageFreq += 3
 	return false
 }
 func (i *goUpgradeItem) Dupe() item {

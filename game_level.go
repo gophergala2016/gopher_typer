@@ -104,7 +104,7 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 
 	if l.gt.stats.GarbageCollect() {
 		l.gt.stats.Garbage = 0
-		if l.gt.stats.GoVersion < 1.4 {
+		if l.gt.stats.GoVersion < 1.5 {
 			l.garbageCollectEndsAt = time.Now().Add(time.Second * 3)
 		} else {
 			l.garbageCollectEndsAt = time.Now().Add(time.Second)
