@@ -38,7 +38,7 @@ func (l *introLevel) refresh() {
 	l.AddEntity(l.pressAKeyText)
 
 	instructions, _ := ioutil.ReadFile("data/instructions.txt")
-	l.AddEntity(tl.NewEntityFromCanvas(quarterW, h/2+2, tl.CanvasFromString(string(instructions))))
+	l.AddEntity(tl.NewEntityFromCanvas(quarterW, h/2+1, tl.CanvasFromString(string(instructions))))
 
 	l.needsRefresh = false
 }

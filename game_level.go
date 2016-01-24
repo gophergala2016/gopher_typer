@@ -3,7 +3,6 @@ package gopher_typer
 import (
 	"math/rand"
 	"strings"
-	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
@@ -81,8 +80,6 @@ func (l *gameLevel) Tick(e tl.Event) {
 			l.currentWord.KeyDown(e.Ch)
 		}
 	}
-}
-func (l *gameLevel) Update(dt time.Duration) {
 }
 
 func NewGameLevel(g *GopherTyper, fg, bg tl.Attr) gameLevel {

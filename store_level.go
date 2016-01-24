@@ -3,7 +3,6 @@ package gopher_typer
 import (
 	"fmt"
 	"io/ioutil"
-	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
@@ -93,10 +92,6 @@ func (l *storeLevel) Tick(e tl.Event) {
 		}
 		l.refresh()
 	}
-}
-
-func (l *storeLevel) Update(dt time.Duration) {
-
 }
 
 func NewBaseItems() []item {
