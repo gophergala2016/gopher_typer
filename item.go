@@ -1,6 +1,10 @@
 package gopher_typer
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type item interface {
 	Name() string
@@ -8,10 +12,13 @@ type item interface {
 	Price() int
 	PriceDesc() string
 
-	Tick(gt *GopherTyper)
+	Tick(g *gameLevel)
 }
 
 type goroutineItem struct {
+	wakeAt    time.Time
+	baseWait  time.Duration
+	waitRange time.Duration
 }
 
 func (i *goroutineItem) Name() string {
@@ -26,7 +33,31 @@ func (i *goroutineItem) Price() int {
 func (i *goroutineItem) PriceDesc() string {
 	return fmt.Sprintf("$%d", i.Price())
 }
-func (i *goroutineItem) Tick(gt *GopherTyper) {
+func (i *goroutineItem) Tick(gl *gameLevel) {
+	if time.Now().After(i.wakeAt) {
+		//eat a word
+		var possibleWords []int
+		for i, w := range gl.words {
+			if gl.currentWord != gl.words[i] && !w.complete {
+				possibleWords = append(possibleWords, i)
+			}
+		}
+		if len(possibleWords) > 0 {
+			gl.words[possibleWords[rand.Intn(len(possibleWords))]].complete = true
+		}
+
+		i.sleep()
+	}
+}
+
+func (i *goroutineItem) sleep() {
+	i.wakeAt = time.Now().Add(i.baseWait + time.Duration(rand.Intn(int(i.waitRange))))
+}
+
+func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
+	item := goroutineItem{waitRange: waitRange, baseWait: baseWait}
+	item.sleep()
+	return &item
 }
 
 type cpuUpgradeItem struct {
@@ -44,5 +75,5 @@ func (i *cpuUpgradeItem) Price() int {
 func (i *cpuUpgradeItem) PriceDesc() string {
 	return fmt.Sprintf("$%d", i.Price())
 }
-func (i *cpuUpgradeItem) Tick(gt *GopherTyper) {
+func (i *cpuUpgradeItem) Tick(gl *gameLevel) {
 }

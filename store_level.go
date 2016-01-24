@@ -3,6 +3,7 @@ package gopher_typer
 import (
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
@@ -96,7 +97,7 @@ func (l *storeLevel) Tick(e tl.Event) {
 
 func NewBaseItems() []item {
 	return []item{
-		&goroutineItem{},
+		NewGoroutineItem(800*time.Millisecond, 1000*time.Millisecond),
 		&cpuUpgradeItem{},
 	}
 }

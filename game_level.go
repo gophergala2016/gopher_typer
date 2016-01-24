@@ -41,6 +41,11 @@ func (l *gameLevel) Activate() {
 
 func (l *gameLevel) Draw(screen *tl.Screen) {
 	l.Level.Draw(screen)
+
+	for _, i := range l.gt.items {
+		i.Tick(l)
+	}
+
 	_, sh := screen.Size()
 	gameOver := false
 	for _, w := range l.words {
@@ -65,7 +70,7 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
-		l.currentWord.SetColor(tl.ColorGreen, tl.ColorBlue)
+		l.currentWord.SetColor(tl.ColorRed, tl.ColorGreen, tl.ColorBlue|tl.AttrUnderline)
 	} else {
 		l.gt.GoToEndWin()
 	}
