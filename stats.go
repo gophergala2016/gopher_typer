@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import "math/rand"
 
@@ -7,16 +7,15 @@ type stats struct {
 	LevelsAttempted int
 	Dollars         int
 	TotalEarned     int
-	CpuUpgrades     int
+	CPUUpgrades     int
 	GoVersion       float32
 	Lives           int
 	Garbage         int
 	GarbageFreq     int
 }
 
-func NewStats() stats {
-	return stats{Lives: 3, CpuUpgrades: 1, GarbageFreq: 10, GoVersion: 1.0}
-
+func newStats() stats {
+	return stats{Lives: 3, CPUUpgrades: 1, GarbageFreq: 10, GoVersion: 1.0}
 }
 
 func (s *stats) GarbageCollect() bool {

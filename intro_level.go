@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"io/ioutil"
@@ -63,11 +63,11 @@ func (l *introLevel) Draw(screen *tl.Screen) {
 
 func (l *introLevel) Tick(event tl.Event) {
 	if event.Type == tl.EventKey {
-		l.gt.GoToGame()
+		l.gt.goToGame()
 	}
 }
 
-func NewIntroLevel(g *GopherTyper, fg, bg tl.Attr) introLevel {
+func newIntroLevel(g *GopherTyper, fg, bg tl.Attr) introLevel {
 	l := tl.NewBaseLevel(tl.Cell{Bg: bg, Fg: fg})
 	return introLevel{Level: l, gt: g}
 }

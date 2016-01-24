@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"time"
@@ -18,9 +18,9 @@ type word struct {
 	bgPlayer, bgGoroutine tl.Attr
 }
 
-const PC = -1
+const pc = -1
 
-func NewWord(x, y int, val string, fgComplete, fgTodo, bgPlayer, bgGoroutine tl.Attr) *word {
+func newWord(x, y int, val string, fgComplete, fgTodo, bgPlayer, bgGoroutine tl.Attr) *word {
 	return &word{str: val, createdAt: time.Now(), v: 2, x: x, y: y, baseY: y, fgComplete: fgComplete, fgTodo: fgTodo, bgPlayer: bgPlayer, bgGoroutine: bgGoroutine}
 }
 
@@ -30,7 +30,7 @@ func (w *word) Draw(s *tl.Screen) {
 			s.RenderCell(w.x+i, w.y, &tl.Cell{Fg: w.fgTodo, Bg: tl.ColorDefault, Ch: ch})
 		} else {
 			var bg tl.Attr
-			if w.startedBy == PC {
+			if w.startedBy == pc {
 				bg = w.bgPlayer
 			} else {
 				bg = w.bgGoroutine

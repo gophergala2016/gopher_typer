@@ -1,12 +1,12 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"os"
-	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
 
+// GopherTyper handles the local state of the game.
 type GopherTyper struct {
 	g        *tl.Game
 	wordList []string
@@ -20,6 +20,7 @@ type GopherTyper struct {
 	items    []item
 }
 
+// NewGopherTyper gets the game ready to run.
 func NewGopherTyper() (*GopherTyper, error) {
 	wReader, err := os.Open("data/words.txt")
 	if err != nil {
@@ -29,53 +30,48 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt := GopherTyper{}
 	gt.g = tl.NewGame()
 	gt.g.Screen().SetFps(30)
-	gt.wordList = NewWordLoader(wReader)
-	gt.intro = NewIntroLevel(&gt, tl.ColorBlack, tl.ColorBlue)
-	gt.game = NewGameLevel(&gt, tl.ColorBlack, tl.ColorRed)
-	gt.store = NewStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
-	gt.end = NewEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
+	gt.wordList = newWordLoader(wReader)
+	gt.intro = newIntroLevel(&gt, tl.ColorBlack, tl.ColorBlue)
+	gt.game = newGameLevel(&gt, tl.ColorBlack, tl.ColorRed)
+	gt.store = newStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
+	gt.end = newEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
 
-	gt.stats = NewStats()
+	gt.stats = newStats()
 
 	return &gt, nil
 }
 
+// Run starts the game, and blocks forever.
 func (gt *GopherTyper) Run() {
-	gt.GoToIntro()
+	gt.goToIntro()
 	gt.g.Start()
 }
 
-func (gt *GopherTyper) GoToIntro() {
+func (gt *GopherTyper) goToIntro() {
 	gt.level = &gt.intro
 	gt.intro.Activate()
 }
 
-func (gt *GopherTyper) GoToGame() {
+func (gt *GopherTyper) goToGame() {
 	if gt.stats.Lives == 0 {
-		gt.stats = NewStats()
+		gt.stats = newStats()
 		gt.items = []item{}
 	}
 	gt.level = &gt.game
 	gt.game.Activate()
 }
 
-func (gt *GopherTyper) GoToStore() {
+func (gt *GopherTyper) goToStore() {
 	gt.level = &gt.store
 	gt.store.Activate()
 }
 
-func (gt *GopherTyper) GoToEndWin() {
+func (gt *GopherTyper) goToEndWin() {
 	gt.level = &gt.end
 	gt.end.ActivateWin()
 }
 
-func (gt *GopherTyper) GoToEndFail() {
+func (gt *GopherTyper) goToEndFail() {
 	gt.level = &gt.end
 	gt.end.ActivateFail()
-}
-
-func (gt *GopherTyper) Tick(dt time.Duration) {
-	if gt.level == nil {
-		gt.GoToIntro()
-	}
 }

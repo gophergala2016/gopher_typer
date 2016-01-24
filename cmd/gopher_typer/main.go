@@ -10,7 +10,7 @@ import (
 
 func main() {
 	rand.Seed(int64(time.Now().Nanosecond()))
-	gt, err := gopher_typer.NewGopherTyper()
+	gt, err := gopherTyper.NewGopherTyper()
 	if err != nil {
 		log.Fatal(err)
 	}

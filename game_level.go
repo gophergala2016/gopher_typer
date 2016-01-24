@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"fmt"
@@ -42,7 +42,7 @@ func (l *gameLevel) Activate() {
 			x = 0
 			y++
 		}
-		w := NewWord(x, y, str, tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
+		w := newWord(x, y, str, tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
 		l.AddEntity(w)
 		l.words = append(l.words, w)
 		x += len(w.str) + 2
@@ -99,7 +99,7 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 
 	if l.currentWord == nil && len(possibleWords) > 0 {
 		l.currentWord = l.words[possibleWords[rand.Intn(len(possibleWords))]]
-		l.currentWord.startedBy = PC
+		l.currentWord.startedBy = pc
 	}
 
 	if l.gt.stats.GarbageCollect() {
@@ -135,10 +135,10 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 	}
 	// End conditions
 	if gameWon {
-		l.gt.GoToEndWin()
+		l.gt.goToEndWin()
 	}
 	if gameLost {
-		l.gt.GoToEndFail()
+		l.gt.goToEndFail()
 	}
 }
 
@@ -150,6 +150,6 @@ func (l *gameLevel) Tick(e tl.Event) {
 	}
 }
 
-func NewGameLevel(g *GopherTyper, fg, bg tl.Attr) gameLevel {
+func newGameLevel(g *GopherTyper, fg, bg tl.Attr) gameLevel {
 	return gameLevel{gt: g, fg: fg, bg: bg}
 }

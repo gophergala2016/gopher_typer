@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ type item interface {
 	Desc() string
 	Price() int
 	PriceDesc() string
-	SetId(int)
+	SetID(int)
 	Reset(gt *GopherTyper)
 	Purchase(g *storeLevel) bool
 	Dupe() item
@@ -71,12 +71,12 @@ func (i *goroutineItem) sleep() {
 	i.wakeAt = time.Now().Add(i.baseWait/time.Duration(i.cpuUpgrades) + time.Duration(rand.Intn(int(i.waitRange))))
 }
 
-func (i *goroutineItem) SetId(id int) {
+func (i *goroutineItem) SetID(id int) {
 	i.id = id
 }
 func (i *goroutineItem) Reset(gt *GopherTyper) {
 	i.currentWord = nil
-	i.cpuUpgrades = gt.stats.CpuUpgrades
+	i.cpuUpgrades = gt.stats.CPUUpgrades
 	i.price = 1000
 	for _, itm := range gt.items {
 		if itm.Name() == i.Name() {
@@ -93,7 +93,7 @@ func (i *goroutineItem) Purchase(l *storeLevel) bool {
 	return true
 }
 
-func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
+func newGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
 	item := goroutineItem{waitRange: waitRange, baseWait: baseWait, cpuUpgrades: 1}
 	item.sleep()
 	return &item
@@ -118,14 +118,14 @@ func (i *cpuUpgradeItem) PriceDesc() string {
 }
 func (i *cpuUpgradeItem) Tick(gl *gameLevel) {
 }
-func (i *cpuUpgradeItem) SetId(id int) {
+func (i *cpuUpgradeItem) SetID(id int) {
 	i.id = id
 }
 func (i *cpuUpgradeItem) Reset(gt *GopherTyper) {
-	i.price = 2000 * gt.stats.CpuUpgrades
+	i.price = 2000 * gt.stats.CPUUpgrades
 }
 func (i *cpuUpgradeItem) Purchase(l *storeLevel) bool {
-	l.gt.stats.CpuUpgrades++
+	l.gt.stats.CPUUpgrades++
 	return false
 }
 func (i *cpuUpgradeItem) Dupe() item {
@@ -154,7 +154,7 @@ func (i *goUpgradeItem) PriceDesc() string {
 }
 func (i *goUpgradeItem) Tick(gl *gameLevel) {
 }
-func (i *goUpgradeItem) SetId(id int) {
+func (i *goUpgradeItem) SetID(id int) {
 	i.id = id
 }
 func (i *goUpgradeItem) Reset(gt *GopherTyper) {

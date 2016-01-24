@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"fmt"
@@ -169,14 +169,14 @@ func (l *endLevel) Tick(e tl.Event) {
 	if time.Now().After(l.tickWait) && e.Type == tl.EventKey {
 		if e.Ch == 'N' || e.Ch == 'n' || e.Ch == 'R' || e.Ch == 'r' {
 			l.gt.g.SetEndKey(tl.KeyCtrlC)
-			l.gt.GoToGame()
+			l.gt.goToGame()
 		} else if e.Ch == 'S' || e.Ch == 's' {
 			l.gt.g.SetEndKey(tl.KeyCtrlC)
-			l.gt.GoToStore()
+			l.gt.goToStore()
 		}
 	}
 }
 
-func NewEndLevel(g *GopherTyper, fg, bg tl.Attr) endLevel {
+func newEndLevel(g *GopherTyper, fg, bg tl.Attr) endLevel {
 	return endLevel{gt: g, fg: fg, bg: bg}
 }

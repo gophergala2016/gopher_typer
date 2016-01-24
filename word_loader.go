@@ -1,11 +1,11 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"bufio"
 	"io"
 )
 
-func NewWordLoader(r io.Reader) []string {
+func newWordLoader(r io.Reader) []string {
 	var words []string
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanWords)

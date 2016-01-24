@@ -1,4 +1,4 @@
-package gopher_typer
+package gopherTyper
 
 import (
 	"fmt"
@@ -65,7 +65,7 @@ func (l *storeLevel) refresh() {
 	msg = fmt.Sprintf("Goroutines: %d", len(l.gt.items))
 	l.AddEntity(tl.NewText(x, y, msg, tl.ColorBlue, tl.ColorDefault))
 	y++
-	msg = fmt.Sprintf("CPU Upgrades: %d", l.gt.stats.CpuUpgrades)
+	msg = fmt.Sprintf("CPU Upgrades: %d", l.gt.stats.CPUUpgrades)
 	l.AddEntity(tl.NewText(x, y, msg, tl.ColorBlue, tl.ColorDefault))
 	y++
 	msg = fmt.Sprintf("Go Version: %0.1f", l.gt.stats.GoVersion)
@@ -86,7 +86,7 @@ func (l *storeLevel) purchaseItem(id int) {
 		if itm.Purchase(l) {
 			l.gt.items = append(l.gt.items, itm.Dupe())
 
-			l.gt.items[len(l.gt.items)-1].SetId(len(l.gt.items))
+			l.gt.items[len(l.gt.items)-1].SetID(len(l.gt.items))
 		}
 		l.gt.stats.Dollars -= itm.Price()
 	}
@@ -104,21 +104,21 @@ func (l *storeLevel) Tick(e tl.Event) {
 		} else if e.Key == tl.KeyEnter || e.Ch == 'e' {
 			l.purchaseItem(l.currentItem)
 		} else if e.Ch == 'N' || e.Ch == 'n' {
-			l.gt.GoToGame()
+			l.gt.goToGame()
 			return
 		}
 		l.refresh()
 	}
 }
 
-func NewBaseItems() []item {
+func newBaseItems() []item {
 	return []item{
-		NewGoroutineItem(150*time.Millisecond, 500*time.Millisecond),
+		newGoroutineItem(150*time.Millisecond, 500*time.Millisecond),
 		&cpuUpgradeItem{},
 		&goUpgradeItem{},
 	}
 }
 
-func NewStoreLevel(g *GopherTyper, fg, bg tl.Attr) storeLevel {
-	return storeLevel{gt: g, bg: bg, fg: fg, items: NewBaseItems()}
+func newStoreLevel(g *GopherTyper, fg, bg tl.Attr) storeLevel {
+	return storeLevel{gt: g, bg: bg, fg: fg, items: newBaseItems()}
 }
