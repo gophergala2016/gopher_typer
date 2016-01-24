@@ -11,14 +11,19 @@ type item interface {
 	Desc() string
 	Price() int
 	PriceDesc() string
+	SetId(int)
+	Reset(g *gameLevel)
+	Dupe() item
 
 	Tick(g *gameLevel)
 }
 
 type goroutineItem struct {
-	wakeAt    time.Time
-	baseWait  time.Duration
-	waitRange time.Duration
+	wakeAt      time.Time
+	baseWait    time.Duration
+	waitRange   time.Duration
+	currentWord *word
+	id          int
 }
 
 func (i *goroutineItem) Name() string {
@@ -35,15 +40,23 @@ func (i *goroutineItem) PriceDesc() string {
 }
 func (i *goroutineItem) Tick(gl *gameLevel) {
 	if time.Now().After(i.wakeAt) {
-		//eat a word
-		var possibleWords []int
-		for i, w := range gl.words {
-			if gl.currentWord != gl.words[i] && !w.complete {
-				possibleWords = append(possibleWords, i)
+		if i.currentWord == nil {
+			var possibleWords []int
+			for i, w := range gl.words {
+				if gl.currentWord != gl.words[i] && !w.Complete() && w.startedBy == 0 {
+					possibleWords = append(possibleWords, i)
+				}
 			}
-		}
-		if len(possibleWords) > 0 {
-			gl.words[possibleWords[rand.Intn(len(possibleWords))]].complete = true
+			if len(possibleWords) > 0 {
+				i.currentWord = gl.words[possibleWords[rand.Intn(len(possibleWords))]]
+				i.currentWord.completedChars++
+				i.currentWord.startedBy = i.id
+			}
+		} else {
+			i.currentWord.completedChars++
+			if i.currentWord.Complete() {
+				i.currentWord = nil
+			}
 		}
 
 		i.sleep()
@@ -54,6 +67,18 @@ func (i *goroutineItem) sleep() {
 	i.wakeAt = time.Now().Add(i.baseWait + time.Duration(rand.Intn(int(i.waitRange))))
 }
 
+func (i *goroutineItem) SetId(id int) {
+	i.id = id
+}
+func (i *goroutineItem) Reset(l *gameLevel) {
+	i.currentWord = nil
+}
+func (i *goroutineItem) Dupe() item {
+	var dupe goroutineItem
+	dupe = *i
+	return &dupe
+}
+
 func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
 	item := goroutineItem{waitRange: waitRange, baseWait: baseWait}
 	item.sleep()
@@ -61,6 +86,7 @@ func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
 }
 
 type cpuUpgradeItem struct {
+	id int
 }
 
 func (i *cpuUpgradeItem) Name() string {
@@ -76,4 +102,15 @@ func (i *cpuUpgradeItem) PriceDesc() string {
 	return fmt.Sprintf("$%d", i.Price())
 }
 func (i *cpuUpgradeItem) Tick(gl *gameLevel) {
+}
+func (i *cpuUpgradeItem) SetId(id int) {
+	i.id = id
+}
+func (i *cpuUpgradeItem) Reset(l *gameLevel) {
+}
+func (i *cpuUpgradeItem) Dupe() item {
+	var dupe cpuUpgradeItem
+	dupe = *i
+	return &dupe
+
 }

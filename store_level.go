@@ -71,7 +71,9 @@ func (l *storeLevel) Activate() {
 func (l *storeLevel) purchaseItem(id int) {
 	itm := l.items[id]
 	if itm.Price() <= l.gt.stats.Dollars {
-		l.gt.items = append(l.gt.items, itm)
+		l.gt.items = append(l.gt.items, itm.Dupe())
+
+		l.gt.items[len(l.gt.items)-1].SetId(len(l.gt.items))
 		l.gt.stats.Dollars -= itm.Price()
 	}
 }
@@ -97,7 +99,7 @@ func (l *storeLevel) Tick(e tl.Event) {
 
 func NewBaseItems() []item {
 	return []item{
-		NewGoroutineItem(800*time.Millisecond, 1000*time.Millisecond),
+		NewGoroutineItem(300*time.Millisecond, 500*time.Millisecond),
 		&cpuUpgradeItem{},
 	}
 }

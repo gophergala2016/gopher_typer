@@ -1,6 +1,7 @@
 package gopher_typer
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 
@@ -28,7 +29,7 @@ func (l *gameLevel) Activate() {
 	l.words = []*word{}
 
 	for i := 0; i < numWords; i++ {
-		w := NewWord(w/numWords*i, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorGreen, tl.ColorDefault)
+		w := NewWord(w/numWords*i, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
 		l.AddEntity(w)
 		l.words = append(l.words, w)
 	}
@@ -36,45 +37,65 @@ func (l *gameLevel) Activate() {
 	l.AddEntity(l.currentWordText)
 
 	l.AddEntity(tl.NewText(0, h-2, strings.Repeat("*", w), tl.ColorBlack, tl.ColorDefault))
+	for _, i := range l.gt.items {
+		i.Reset(l)
+	}
+
 	l.gt.g.Screen().SetLevel(l)
 }
 
 func (l *gameLevel) Draw(screen *tl.Screen) {
 	l.Level.Draw(screen)
 
-	for _, i := range l.gt.items {
+	for idx, i := range l.gt.items {
 		i.Tick(l)
 	}
 
 	_, sh := screen.Size()
-	gameOver := false
+	gameLost := false
+	gameWon := false
+	totalComplete := 0
 	for _, w := range l.words {
 		w.Update()
-		if !w.complete && w.y > sh-3 {
-			gameOver = true
+		if !w.Complete() && w.y > sh-3 {
+			gameLost = true
 		}
+		if w.Complete() {
+			totalComplete++
+		}
+	}
+	if totalComplete == len(l.words) {
+		gameWon = true
 	}
 	var possibleWords []int
 	for i, w := range l.words {
-		if !w.complete {
-			possibleWords = append(possibleWords, i)
-		} else if l.words[i] == l.currentWord {
+		if w.Complete() && l.words[i] == l.currentWord {
 			l.currentWord = nil
+		} else if !w.Complete() && w.startedBy == 0 {
+			possibleWords = append(possibleWords, i)
 		}
 	}
 
 	if l.currentWord == nil && len(possibleWords) > 0 {
 		l.currentWord = l.words[possibleWords[rand.Intn(len(possibleWords))]]
+		l.currentWord.startedBy = PC
 	}
 
 	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
-		l.currentWord.SetColor(tl.ColorRed, tl.ColorGreen, tl.ColorBlue|tl.AttrUnderline)
-	} else {
+	}
+	if gameWon {
+		for _, w := range l.words {
+			log.Printf("Words: %+v", w)
+		}
+		for _, i := range l.gt.items {
+			log.Printf("Item: %+v", i)
+		}
+
 		l.gt.GoToEndWin()
 	}
-	if gameOver {
+	if gameLost {
 		l.gt.GoToEndFail()
 	}
 }
