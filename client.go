@@ -28,6 +28,7 @@ func NewGopherTyper() (*GopherTyper, error) {
 
 	gt := GopherTyper{}
 	gt.g = tl.NewGame()
+	gt.g.Screen().SetFps(30)
 	gt.wordList = NewWordLoader(wReader)
 	gt.intro = NewIntroLevel(&gt, tl.ColorBlack, tl.ColorBlue)
 	gt.game = NewGameLevel(&gt, tl.ColorBlack, tl.ColorRed)
