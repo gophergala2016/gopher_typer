@@ -71,9 +71,11 @@ func (l *storeLevel) Activate() {
 func (l *storeLevel) purchaseItem(id int) {
 	itm := l.items[id]
 	if itm.Price() <= l.gt.stats.Dollars {
-		l.gt.items = append(l.gt.items, itm.Dupe())
+		if itm.Purchase(l) {
+			l.gt.items = append(l.gt.items, itm.Dupe())
 
-		l.gt.items[len(l.gt.items)-1].SetId(len(l.gt.items))
+			l.gt.items[len(l.gt.items)-1].SetId(len(l.gt.items))
+		}
 		l.gt.stats.Dollars -= itm.Price()
 	}
 }

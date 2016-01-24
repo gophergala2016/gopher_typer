@@ -34,6 +34,8 @@ func NewGopherTyper() (*GopherTyper, error) {
 	gt.store = NewStoreLevel(&gt, tl.ColorBlack, tl.ColorCyan)
 	gt.end = NewEndLevel(&gt, tl.ColorBlack, tl.ColorGreen)
 
+	gt.stats.CpuUpgrades = 1
+
 	return &gt, nil
 }
 

@@ -13,6 +13,7 @@ type item interface {
 	PriceDesc() string
 	SetId(int)
 	Reset(g *gameLevel)
+	Purchase(g *storeLevel) bool
 	Dupe() item
 
 	Tick(g *gameLevel)
@@ -24,6 +25,7 @@ type goroutineItem struct {
 	waitRange   time.Duration
 	currentWord *word
 	id          int
+	cpuUpgrades int
 }
 
 func (i *goroutineItem) Name() string {
@@ -64,7 +66,7 @@ func (i *goroutineItem) Tick(gl *gameLevel) {
 }
 
 func (i *goroutineItem) sleep() {
-	i.wakeAt = time.Now().Add(i.baseWait + time.Duration(rand.Intn(int(i.waitRange))))
+	i.wakeAt = time.Now().Add(i.baseWait/time.Duration(i.cpuUpgrades) + time.Duration(rand.Intn(int(i.waitRange))))
 }
 
 func (i *goroutineItem) SetId(id int) {
@@ -72,15 +74,19 @@ func (i *goroutineItem) SetId(id int) {
 }
 func (i *goroutineItem) Reset(l *gameLevel) {
 	i.currentWord = nil
+	i.cpuUpgrades = l.gt.stats.CpuUpgrades
 }
 func (i *goroutineItem) Dupe() item {
 	var dupe goroutineItem
 	dupe = *i
 	return &dupe
 }
+func (i *goroutineItem) Purchase(l *storeLevel) bool {
+	return true
+}
 
 func NewGoroutineItem(waitRange, baseWait time.Duration) *goroutineItem {
-	item := goroutineItem{waitRange: waitRange, baseWait: baseWait}
+	item := goroutineItem{waitRange: waitRange, baseWait: baseWait, cpuUpgrades: 1}
 	item.sleep()
 	return &item
 }
@@ -107,6 +113,10 @@ func (i *cpuUpgradeItem) SetId(id int) {
 	i.id = id
 }
 func (i *cpuUpgradeItem) Reset(l *gameLevel) {
+}
+func (i *cpuUpgradeItem) Purchase(l *storeLevel) bool {
+	l.gt.stats.CpuUpgrades++
+	return false
 }
 func (i *cpuUpgradeItem) Dupe() item {
 	var dupe cpuUpgradeItem

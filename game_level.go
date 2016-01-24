@@ -33,6 +33,7 @@ func (l *gameLevel) Activate() {
 		l.AddEntity(w)
 		l.words = append(l.words, w)
 	}
+	l.currentWord = nil
 	l.currentWordText = tl.NewText(0, h-1, "", tl.ColorRed, tl.ColorBlue)
 	l.AddEntity(l.currentWordText)
 
@@ -47,7 +48,7 @@ func (l *gameLevel) Activate() {
 func (l *gameLevel) Draw(screen *tl.Screen) {
 	l.Level.Draw(screen)
 
-	for idx, i := range l.gt.items {
+	for _, i := range l.gt.items {
 		i.Tick(l)
 	}
 
