@@ -1,6 +1,6 @@
 # GoTyper
+[![asciicast](https://asciinema.org/a/9l178xkvfg270szhz3rgu1e32.png)](https://asciinema.org/a/9l178xkvfg270szhz3rgu1e32)
 
-https://asciinema.org/a/9l178xkvfg270szhz3rgu1e32
 
 GoTyper is a typing game.
 
