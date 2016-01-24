@@ -57,6 +57,7 @@ func (i *goroutineItem) Tick(gl *gameLevel) {
 			}
 		} else {
 			i.currentWord.completedChars++
+			gl.gt.stats.Garbage++
 			if i.currentWord.Complete() {
 				i.currentWord = nil
 			}

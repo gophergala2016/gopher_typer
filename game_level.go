@@ -1,25 +1,30 @@
 package gopher_typer
 
 import (
-	"log"
+	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 
 	tl "github.com/JoelOtter/termloop"
 )
 
 type gameLevel struct {
 	tl.Level
-	gt              *GopherTyper
-	fg              tl.Attr
-	bg              tl.Attr
-	words           []*word
-	currentWord     *word
-	currentWordText *tl.Text
+	gt                   *GopherTyper
+	fg                   tl.Attr
+	bg                   tl.Attr
+	words                []*word
+	currentWord          *word
+	currentWordText      *tl.Text
+	garbageText          *tl.Text
+	garbageCollectEndsAt time.Time
 }
 
 func (l *gameLevel) Activate() {
 	l.Level = tl.NewBaseLevel(tl.Cell{Bg: l.bg, Fg: l.fg})
+
+	l.gt.stats.Garbage = 0
 
 	l.gt.game.AddEntity(&l.gt.console)
 	l.gt.console.SetText("")
@@ -28,14 +33,19 @@ func (l *gameLevel) Activate() {
 	w, h := l.gt.g.Screen().Size()
 	l.words = []*word{}
 
+	x := 0
 	for i := 0; i < numWords; i++ {
-		w := NewWord(w/numWords*i, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
+		w := NewWord(x, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
 		l.AddEntity(w)
 		l.words = append(l.words, w)
+		x += len(w.str) + 2
 	}
 	l.currentWord = nil
 	l.currentWordText = tl.NewText(0, h-1, "", tl.ColorRed, tl.ColorBlue)
 	l.AddEntity(l.currentWordText)
+
+	l.garbageText = tl.NewText(w, h-1, "", tl.ColorRed, tl.ColorBlue)
+	l.AddEntity(l.garbageText)
 
 	l.AddEntity(tl.NewText(0, h-2, strings.Repeat("*", w), tl.ColorBlack, tl.ColorDefault))
 	for _, i := range l.gt.items {
@@ -48,11 +58,13 @@ func (l *gameLevel) Activate() {
 func (l *gameLevel) Draw(screen *tl.Screen) {
 	l.Level.Draw(screen)
 
-	for _, i := range l.gt.items {
-		i.Tick(l)
+	if time.Now().After(l.garbageCollectEndsAt) {
+		for _, i := range l.gt.items {
+			i.Tick(l)
+		}
 	}
 
-	_, sh := screen.Size()
+	sw, sh := screen.Size()
 	gameLost := false
 	gameWon := false
 	totalComplete := 0
@@ -82,18 +94,33 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 		l.currentWord.startedBy = PC
 	}
 
+	if l.gt.stats.GarbageCollect() {
+		l.gt.stats.Garbage = 0
+		l.garbageCollectEndsAt = time.Now().Add(time.Second * 3)
+
+	}
+	var msg string
+	if time.Now().Before(l.garbageCollectEndsAt) {
+		msg = fmt.Sprintf("COLLECTING GARBAGE")
+		l.garbageText.SetText(msg)
+		bgColor := tl.ColorBlue
+		if float64(time.Now().Sub(l.garbageCollectEndsAt))/float64(time.Second) > 0.5 {
+			bgColor = tl.ColorBlack
+		}
+		l.garbageText.SetColor(tl.ColorRed, bgColor)
+		l.garbageText.SetPosition(sw/2-len(msg)/2, 4)
+	} else {
+		msg = fmt.Sprintf("Garbage: %d ", l.gt.stats.Garbage)
+		l.garbageText.SetText(msg)
+		l.garbageText.SetColor(tl.ColorRed, tl.ColorBlue)
+		l.garbageText.SetPosition(sw-len(msg), sh-1)
+	}
+
 	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
 	}
 	if gameWon {
-		for _, w := range l.words {
-			log.Printf("Words: %+v", w)
-		}
-		for _, i := range l.gt.items {
-			log.Printf("Item: %+v", i)
-		}
-
 		l.gt.GoToEndWin()
 	}
 	if gameLost {

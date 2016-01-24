@@ -37,22 +37,32 @@ func (l *endLevel) PrintStats(amt, x, y int) {
 	msg := fmt.Sprintf("Levels Complete: %d", l.gt.stats.LevelsCompleted)
 	text := tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+	y++
 
 	msg = fmt.Sprintf("Levels Attempted: %d", l.gt.stats.LevelsAttempted)
 	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+	y++
 
-	msg = fmt.Sprintf("Cash Earned: $%d", amt)
-	text = tl.NewText(x-len(msg)/2, y+2, msg, tl.ColorBlack, tl.ColorDefault)
+	msg = fmt.Sprintf("Reward: $%d", amt)
+	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+	y++
 
-	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.Dollars)
-	text = tl.NewText(x-len(msg)/2, y+3, msg, tl.ColorBlack, tl.ColorDefault)
+	msg = fmt.Sprintf("Balance: $%d", l.gt.stats.Dollars)
+	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+	y++
+
+	msg = fmt.Sprintf("Total Cash: $%d", l.gt.stats.TotalEarned)
+	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
+	l.AddEntity(text)
+	y++
 
 	msg = fmt.Sprintf("Lives Remaining: %d", l.gt.stats.Lives)
-	text = tl.NewText(x-len(msg)/2, y+4, msg, tl.ColorBlack, tl.ColorDefault)
+	text = tl.NewText(x-len(msg)/2, y, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
+	y++
 
 	if l.win {
 		msg = fmt.Sprintf("Press N for next level or S for store")
@@ -61,7 +71,7 @@ func (l *endLevel) PrintStats(amt, x, y int) {
 	} else {
 		msg = fmt.Sprintf("Press Enter to quit or N for new game")
 	}
-	text = tl.NewText(x-len(msg)/2, y+7, msg, tl.ColorBlack, tl.ColorDefault)
+	text = tl.NewText(x-len(msg)/2, y+1, msg, tl.ColorBlack, tl.ColorDefault)
 	l.AddEntity(text)
 }
 
@@ -75,6 +85,7 @@ func (l *endLevel) ActivateWin() {
 	l.gt.stats.LevelsCompleted++
 	l.gt.stats.LevelsAttempted++
 	l.gt.stats.Dollars += moneyEarned
+	l.gt.stats.TotalEarned += moneyEarned
 	l.gt.console.SetText("")
 	w, h := l.gt.g.Screen().Size()
 	rect := tl.NewRectangle(10, 2, w-20, h-4, tl.ColorCyan)
