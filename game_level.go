@@ -80,11 +80,12 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 	if totalComplete == len(l.words) {
 		gameWon = true
 	}
+	if l.currentWord != nil && l.currentWord.Complete() {
+		l.currentWord = nil
+	}
 	var possibleWords []int
 	for i, w := range l.words {
-		if w.Complete() && l.words[i] == l.currentWord {
-			l.currentWord = nil
-		} else if !w.Complete() && w.startedBy == 0 {
+		if !w.Complete() && w.startedBy == 0 {
 			possibleWords = append(possibleWords, i)
 		}
 	}
@@ -116,10 +117,12 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 		l.garbageText.SetPosition(sw-len(msg), sh-1)
 	}
 
-	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
+	} else {
+		l.currentWordText.SetText("")
 	}
+	// End conditions
 	if gameWon {
 		l.gt.GoToEndWin()
 	}
