@@ -50,16 +50,23 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 			gameOver = true
 		}
 	}
-	l.currentWord = nil
+	var possibleWords []int
 	for i, w := range l.words {
 		if !w.complete {
-			l.currentWord = l.words[i]
-			break
+			possibleWords = append(possibleWords, i)
+		} else if l.words[i] == l.currentWord {
+			l.currentWord = nil
 		}
 	}
+
+	if l.currentWord == nil && len(possibleWords) > 0 {
+		l.currentWord = l.words[possibleWords[rand.Intn(len(possibleWords))]]
+	}
+
 	// End conditions
 	if l.currentWord != nil {
 		l.currentWordText.SetText("Current Word: " + l.currentWord.str[l.currentWord.completedChars:])
+		l.currentWord.SetColor(tl.ColorGreen, tl.ColorBlue)
 	} else {
 		l.gt.GoToEndWin()
 	}

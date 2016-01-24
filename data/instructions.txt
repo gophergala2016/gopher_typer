@@ -1,4 +1,4 @@
-Type the words from left to right.
+Type the word with the blue background.
 
 If you are not sure what you need to type, the remaining part of the word
 is displayed in the bottom left.
