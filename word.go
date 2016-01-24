@@ -13,7 +13,7 @@ type word struct {
 	startedBy             int
 	completedChars        int
 	deleteAt              time.Time
-	x, y                  int
+	x, y, baseY           int
 	fgComplete, fgTodo    tl.Attr
 	bgPlayer, bgGoroutine tl.Attr
 }
@@ -21,7 +21,7 @@ type word struct {
 const PC = -1
 
 func NewWord(x, y int, val string, fgComplete, fgTodo, bgPlayer, bgGoroutine tl.Attr) *word {
-	return &word{str: val, createdAt: time.Now(), v: 2, x: x, y: y, fgComplete: fgComplete, fgTodo: fgTodo, bgPlayer: bgPlayer, bgGoroutine: bgGoroutine}
+	return &word{str: val, createdAt: time.Now(), v: 2, x: x, y: y, baseY: y, fgComplete: fgComplete, fgTodo: fgTodo, bgPlayer: bgPlayer, bgGoroutine: bgGoroutine}
 }
 
 func (w *word) Draw(s *tl.Screen) {
@@ -52,7 +52,7 @@ func (w *word) Complete() bool {
 }
 
 func (w *word) Update() {
-	w.y = int((time.Now().Sub(w.createdAt)).Seconds() * w.v)
+	w.y = w.baseY + int((time.Now().Sub(w.createdAt)).Seconds()*w.v)
 
 	if w.Complete() {
 		w.bgPlayer = tl.AttrUnderline

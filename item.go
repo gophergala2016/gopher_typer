@@ -134,3 +134,40 @@ func (i *cpuUpgradeItem) Dupe() item {
 	return &dupe
 
 }
+
+type goUpgradeItem struct {
+	id    int
+	price int
+}
+
+func (i *goUpgradeItem) Name() string {
+	return "Go Upgrade"
+}
+func (i *goUpgradeItem) Desc() string {
+	return "Improves garbage collection performance"
+}
+func (i *goUpgradeItem) Price() int {
+	return i.price
+}
+func (i *goUpgradeItem) PriceDesc() string {
+	return fmt.Sprintf("$%d", i.Price())
+}
+func (i *goUpgradeItem) Tick(gl *gameLevel) {
+}
+func (i *goUpgradeItem) SetId(id int) {
+	i.id = id
+}
+func (i *goUpgradeItem) Reset(gt *GopherTyper) {
+	i.price = int(4000 * gt.stats.GoVersion)
+}
+func (i *goUpgradeItem) Purchase(l *storeLevel) bool {
+	l.gt.stats.GoVersion += 0.1
+	l.gt.stats.GarbageFreq += 5
+	return false
+}
+func (i *goUpgradeItem) Dupe() item {
+	var dupe goUpgradeItem
+	dupe = *i
+	return &dupe
+
+}

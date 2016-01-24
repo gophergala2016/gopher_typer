@@ -60,6 +60,18 @@ func (l *storeLevel) refresh() {
 	desc := l.items[l.currentItem].Desc()
 	l.AddEntity(tl.NewText(14, y+1, desc, tl.ColorBlue, tl.ColorDefault))
 
+	y = 12
+	x := w - 30
+	msg = fmt.Sprintf("Goroutines: %d", len(l.gt.items))
+	l.AddEntity(tl.NewText(x, y, msg, tl.ColorBlue, tl.ColorDefault))
+	y++
+	msg = fmt.Sprintf("CPU Upgrades: %d", l.gt.stats.CpuUpgrades)
+	l.AddEntity(tl.NewText(x, y, msg, tl.ColorBlue, tl.ColorDefault))
+	y++
+	msg = fmt.Sprintf("Go Version: %0.1f", l.gt.stats.GoVersion)
+	l.AddEntity(tl.NewText(x, y, msg, tl.ColorBlue, tl.ColorDefault))
+	y++
+
 	l.gt.g.Screen().SetLevel(l)
 }
 
@@ -103,6 +115,7 @@ func NewBaseItems() []item {
 	return []item{
 		NewGoroutineItem(300*time.Millisecond, 500*time.Millisecond),
 		&cpuUpgradeItem{},
+		&goUpgradeItem{},
 	}
 }
 

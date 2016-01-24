@@ -35,8 +35,14 @@ func (l *gameLevel) Activate() {
 	l.words = []*word{}
 
 	x := 0
+	y := 0
 	for i := 0; i < numWords; i++ {
-		w := NewWord(x, 0, l.gt.wordList[rand.Intn(len(l.gt.wordList))], tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
+		str := l.gt.wordList[rand.Intn(len(l.gt.wordList))]
+		if len(str)+x > w {
+			x = 0
+			y++
+		}
+		w := NewWord(x, y, str, tl.ColorRed, tl.ColorGreen, tl.ColorBlue, tl.ColorCyan)
 		l.AddEntity(w)
 		l.words = append(l.words, w)
 		x += len(w.str) + 2
@@ -98,7 +104,11 @@ func (l *gameLevel) Draw(screen *tl.Screen) {
 
 	if l.gt.stats.GarbageCollect() {
 		l.gt.stats.Garbage = 0
-		l.garbageCollectEndsAt = time.Now().Add(time.Second * 3)
+		if l.gt.stats.GoVersion < 1.4 {
+			l.garbageCollectEndsAt = time.Now().Add(time.Second * 3)
+		} else {
+			l.garbageCollectEndsAt = time.Now().Add(time.Second)
+		}
 
 	}
 	var msg string
